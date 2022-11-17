@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Releaf</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="palm tree data visualization  land change detection ">
+    <meta name="author" content="ramaalicoder">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      
+      #map {
+      	background-image: url('grey_wash_wall/grey_wash_wall.png');
+      }
+      
+      #map div.leaflet-tile-pane {
+      	opacity: 0.5;
+      }
+      
+      .text-value {
+      	color: #000000;
+      	font-weight: bold;
+      	font-size: 20px;
+      	width: 100%;
+      }
+      
+      .leaflet-control-legend {
+      	max-height: none !important;
+      }
+        
+    .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+        
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+    </style>
+    <link rel="stylesheet" href="css/bootstrap-responsive.css" >
+    <link rel="stylesheet" href="js/leaflet.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/dvf.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/example.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="css/ui.css" type="text/css" media="screen" />
+</head>
+
+<body>
+	<div class="navbar navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Releaf Company</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+    	<div class="row-fluid">
+			<div id="map"></div>
+		</div>
+	</div>
+    <script type="text/javascript" src="js/leaflet.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="data.js"></script>
+	<script type="text/javascript" src="demo.js"></script>
+	<script type="text/javascript">
+
+$(document).ready(function(){
+	var map;
+	var resize = function () {
+		var $map = $('#map');
+		
+		$map.height($(window).height() - $('div.navbar').outerHeight());
+		
+		if (map) {
+			map.invalidateSize();
+		}
+	};
+	
+	$(window).on('resize', function () {
+		resize();
+	});
+	
+	resize();
+
+	map = L.map('map').setView([4.981857842365571,7.375588274179563 ], 12);
+	
+//	var baseLayer1 = new L.StamenTileLayer('toner', {
+//		detectRetina: true
+//	}).addTo(map);
+var baselayer2 = L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: 'Releaf',
+                maxZoom: 18
+            }
+        ).addTo(map)
+L.control.scale().addTo(map);
+const info = L.control();
+const legend = L.control({position: 'bottomright'});
+//        $.ajax({
+//            url:'data1.geojson',
+//		    type:'GET',
+//        success:function(response){
+//            console.log("data:"+response);
+// 
+//}
+//}); 
+const load_data = L.geoJSON(demo,{
+        pointToLayer: function(feature, latlng) {
+        var oneweekremain =  new L.Icon({
+          iconUrl: 'icon/forest.png',
+          shadowUrl: 'icon/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+      }) ;
+       return L.marker(latlng, {icon: oneweekremain });
+        },
+//    style:function(){
+//        return{ fillColor:"#10f517",
+//                    numberOfSides:50,
+//                    weight: 2,
+//                    opacity: 1,
+//                    color: "#10f517",
+//                    dashArray: '',
+//                    fillOpacity: 0.8
+         // }; 
+    //}
+     
+}).addTo(map); 
+         
+let data_model;  
+function layer2(){
+      data_model =  L.geoJSON(data, {
+    style: function(feature) {
+        if(feature.properties.Ages==="13 - 18"){
+            return  { 
+                    fillColor:"#056608",
+                    weight: 2,
+                    opacity: 1,
+                    color: "#056608",
+                    dashArray: '',
+                    fillOpacity: 0.8
+                    };
+        }else if(feature.properties.Ages==="5 - 8"){
+           return  { fillColor:"#06ce0c",
+                    weight: 2,
+                    opacity: 1,
+                    color: "#06ce0c",
+                    dashArray: '',
+                    fillOpacity: 0.8
+                    };
+        }else if(feature.properties.Ages==="8 - 13"){
+            return  { fillColor:"#07af0c",
+                    weight: 2,
+                    opacity: 1,
+                    color: "#07af0c",
+                    dashArray: '',
+                    fillOpacity: 0.8
+                    };
+        }else if(feature.properties.Ages==="0 - 4"){
+             return { fillColor:"#06800a",
+                    weight: 2,
+                    opacity: 1,
+                    color: "#06800a",
+                    dashArray: '',
+                    fillOpacity: 0.8
+                    };
+    }else{
+        return  { fillColor:"#10f517",
+                    weight: 2,
+                    opacity: 1,
+                    color: "#10f517",
+                    dashArray: '',
+                    fillOpacity: 0.8
+                    };
+        
+        
+    } 
+    },
+onEachFeature:function(feature, layer) {
+    layer.on({
+        mouseover:function(e) {
+        var layer = e.target;
+        layer.setStyle({
+        weight: 2,
+        color: '#e4f703',
+        dashArray: '',
+        fillOpacity: 0.7
+         });
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+          }
+        info.update(feature.properties);
+        //map.fitBounds(e.target.getBounds());
+        },
+        mouseout: function (e) {
+        var layer = e.target;
+         layer.setStyle({
+        weight: null,
+        color: null,
+        dashArray: '',
+        fillOpacity: null
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+                       },
+        click: function(e) {
+               map.fitBounds(e.target.getBounds());
+             }
+    });
+},
+   
+}).addTo(map);   
+}
+    
+    
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Palm tree data class</h4>' +  (props ?
+        '<b>' + props.Ages + '</b><br />'  
+        : 'Hover over a polygon');
+};
+
+info.addTo(map);
+  legend.onAdd = function (map){
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = ["13 - 18", "8 - 13","5 - 8","other"],
+        labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i]) + '"></i> ' +
+             (grades[i] ?  grades[i] + '<br>' : '+');
+    }
+
+    return div;
+};
+function getColor(d) {
+    return d == "13 - 18" ? "#056608" :
+           d == "5 - 8" ? "#06ce0c" :
+           d == "8 - 13"  ? "#07af0c":
+           d == "other"   ? "#10f517":"#06800a" ;
+}
+legend.addTo(map);  
+layer2();
+//layer1();
+L.control.layers({
+    'basemap':baselayer2
+},{
+   'EbonyPolygon':data_model,
+    'EbonyPoint':load_data
+    
+}).addTo(map);
+    
+});	
+</script>
+</body>
+</html>
